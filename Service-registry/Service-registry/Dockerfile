@@ -1,14 +1,12 @@
-# Use an official Java runtime as a parent image
-FROM openjdk:21-jdk-slim
-
-# Set the working directory in the container
+# Step 1: Build the application using Maven
+FROM maven:3.9.6-eclipse-temurin-21 AS builder
 WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Copy the Service Registry JAR file into the container
-COPY target/Service-registry-0.0.1-SNAPSHOT.jar service-registry.jar
-
-# Expose port 8761 (default Eureka port)
+# Step 2: Run the built JAR using OpenJDK
+FROM openjdk:21-jdk-slim
+WORKDIR /app
+COPY --from=builder /app/target/Service-registry-0.0.1-SNAPSHOT.jar service-registry.jar
 EXPOSE 8761
-
-# Run the JAR file
 ENTRYPOINT ["java", "-jar", "service-registry.jar"]
