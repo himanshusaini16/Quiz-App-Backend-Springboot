@@ -17,4 +17,4 @@ COPY --from=builder /app/target/api-gateway-0.0.1-SNAPSHOT.jar api-gateway.jar
 EXPOSE 8083
 
 # Run the Gateway
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "api-gateway.jar"]
