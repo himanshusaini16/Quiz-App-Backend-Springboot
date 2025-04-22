@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "QUESTION-SERVICE")
+@FeignClient(name = "question-service", url = "https://question-service-4955.onrender.com")
 public interface QuizInterface {
     @GetMapping("questions/genrateQuiz")
     public ResponseEntity<List<Integer>> getQuestionsForQuiz(@RequestParam String category, @RequestParam Integer numQ);
