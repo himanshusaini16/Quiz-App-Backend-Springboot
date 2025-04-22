@@ -48,17 +48,27 @@ public class QuizService {
     }
 
     public ResponseEntity<List<QuestionWrapper>> getQuiz(Integer quizId) {
-        Optional<Quiz> quiz = quizDao.findById(quizId);
-        List<Integer> questions = quiz.get().getQuestions();
+        // Check if quiz exists
+        Optional<Quiz> quizOptional = quizDao.findById(quizId);
+        if (!quizOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // 404 if quiz not found
+        }
 
+        Quiz quiz = quizOptional.get();
+        List<Integer> questions = quiz.getQuestions();
+        System.out.println("Quiz ID: " + quizId);
+        System.out.println("Question IDs to fetch: " + questions);
 
-        ResponseEntity<List<QuestionWrapper>> questionsForUser = quizInterface.getQuestionsFromIds(questions);
-
-
-
-
-        return  questionsForUser;
+        try {
+            // Make Feign call to fetch questions
+            ResponseEntity<List<QuestionWrapper>> questionsForUser = quizInterface.getQuestionsFromIds(questions);
+            return questionsForUser;
+        } catch (Exception e) {
+            e.printStackTrace(); // print full error in logs
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 if something breaks
+        }
     }
+
 
     public ResponseEntity<Integer> calculateScore(Integer quizId, List<Response> responses) {
 
